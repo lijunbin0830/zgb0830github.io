@@ -1,0 +1,962 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>艾米社区 | Amy Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --bg-primary: #0f0f13;
+            --bg-secondary: #1a1a22;
+            --highlight-1: #00f5a0;
+            --highlight-2: #fc03f5;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --text-tertiary: #a0a0a0;
+            --border-color: rgba(255,255,255,0.12);
+            --grid-line: rgba(255,255,255,0.03);
+            --card-bg: rgba(255,255,255,0.05);
+            --cta-primary: #00f5a0;
+            --cta-secondary: rgba(255,255,255,0.1);
+            --cta-text: #0f0f13;
+            --shadow-color: rgba(0,0,0,0.5);
+        }
+        
+        /* Light theme variables */
+        .light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f7fa;
+            --highlight-1: #00d090;
+            --highlight-2: #e003dd;
+            --text-primary: #0f0f13;
+            --text-secondary: #333340;
+            --text-tertiary: #6b6b80;
+            --border-color: rgba(0,0,0,0.1);
+            --grid-line: rgba(0,0,0,0.03);
+            --card-bg: rgba(0,0,0,0.02);
+            --cta-primary: #00d090;
+            --cta-secondary: rgba(0,0,0,0.07);
+            --cta-text: #ffffff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease;
+        }
+        
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 32px 32px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .loading-logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1.5rem 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(15, 15, 19, 0.7);
+            transition: all 0.4s ease;
+        }
+
+        .light-theme .navbar {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .navbar.scrolled {
+            padding: 1rem 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            padding: 0;
+        }
+
+        .btn-primary {
+            background: var(--cta-primary);
+            color: var(--cta-text);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,245,160,0.3);
+        }
+
+        .btn-secondary {
+            background: var(--cta-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cta-secondary);
+            transform: translateY(-3px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 5rem;
+        }
+        
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 5;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 0;
+            background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin: 2rem 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .hero-cta {
+            margin-top: 2.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.15;
+            filter: blur(80px);
+            transition: all 30s ease-in-out;
+        }
+        
+        .element-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--highlight-1);
+            top: -100px;
+            left: -100px;
+            animation: floating 20s infinite alternate ease-in-out;
+        }
+        
+        .element-2 {
+            width: 600px;
+            height: 600px;
+            background: var(--highlight-2);
+            bottom: -200px;
+            right: -200px;
+            animation: floating 25s infinite alternate-reverse ease-in-out;
+        }
+        
+        @keyframes floating {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(50px, 50px) rotate(5deg); }
+            66% { transform: translate(-50px, 30px) rotate(-5deg); }
+            100% { transform: translate(30px, -50px) rotate(0deg); }
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            padding: 7rem 0;
+            background-color: var(--bg-secondary);
+            position: relative;
+            z-index: 5;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--bg-secondary));
+            z-index: 1;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .stat-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px var(--shadow-color);
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 7rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 4rem;
+            color: var(--text-primary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .feature-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            .feature-card {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+        
+        .feature-card:nth-child(even) {
+            direction: rtl;
+        }
+        
+        .feature-card:nth-child(even) .feature-text {
+            direction: ltr;
+        }
+        
+        .feature-card:nth-child(even) .feature-visual {
+            direction: ltr;
+        }
+        
+        .feature-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .feature-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 1.5rem;
+            line-height: 1.2;
+            position: relative;
+            display: inline-block;
+            color: var(--text-primary);
+        }
+
+        .feature-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 4rem;
+            height: 0.25rem;
+            background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2));
+            border-radius: 10px;
+        }
+        
+        .feature-desc {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .feature-note {
+            color: var(--text-tertiary);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+        
+        .feature-visual {
+            position: relative;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .feature-image-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px var(--shadow-color);
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover .feature-image-container {
+            transform: perspective(1000px) rotateY(10deg) rotateX(5deg) translateZ(20px);
+            box-shadow: 0 30px 50px var(--shadow-color);
+        }
+
+        .feature-card:nth-child(even):hover .feature-image-container {
+            transform: perspective(1000px) rotateY(-10deg) rotateX(5deg) translateZ(20px);
+        }
+
+        .feature-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .feature-visual svg {
+            position: absolute;
+            z-index: 3;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+            transition: transform 0.4s ease;
+        }
+        
+        .feature-visual:hover svg {
+            transform: scale(1.05);
+        }
+        
+        /* Call to Action Section */
+        .cta-section {
+            padding: 7rem 0;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 70%);
+        }
+        
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            border-radius: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .cta-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        .cta-desc {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--bg-secondary);
+            padding: 5rem 0 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 300px;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-copyright {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            padding-top: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            max-width: 1200px;
+            margin: 3rem auto 0;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            padding: 0;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s both;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s both;
+        }
+
+        .fade-in-left {
+            animation: fadeInLeft 0.8s both;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 4rem;
+            }
+
+            .feature-card {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+
+            .hero-content {
+                padding: 1rem;
+            }
+
+            .feature-visual {
+                min-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .feature-card {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card:nth-child(even) {
+                direction: ltr;
+            }
+
+            .cta-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-logo">艾米</div>
+    </div>
+
+    <!-- Grid Background -->
+    <div class="grid-background"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">艾米</a>
+            <div class="nav-buttons">
+                <button class="btn btn-icon btn-secondary theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button class="btn btn-secondary">登录</button>
+                <button class="btn btn-primary">开始体验</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title animate__animated animate__fadeInUp">艾米社区</h1>
+            <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">连接志同道合的朋友，分享精彩瞬间，共同成长。在艾米社区，探索无限可能。</p>
+            <div class="hero-cta animate__animated animate__fadeInUp animate__delay-2s">
+                <button class="btn btn-primary">立即加入</button>
+                <button class="btn btn-secondary">了解更多</button>
+            </div>
+        </div>
+        <div class="floating-element element-1"></div>
+        <div class="floating-element element-2"></div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item fade-in-up">
+                <h3 class="stat-number">10K+</h3>
+                <p class="stat-label">活跃用户</p>
+            </div>
+            <div class="stat-item fade-in-up" style="animation-delay: 0.2s;">
+                <h3 class="stat-number">50K+</h3>
+                <p class="stat-label">社区内容</p>
+            </div>
+            <div class="stat-item fade-in-up" style="animation-delay: 0.4s;">
+                <h3 class="stat-number">24/7</h3>
+                <p class="stat-label">实时互动</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title fade-in">精彩功能</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-text fade-in-left">
+                    <h2 class="feature-title">发现兴趣</h2>
+                    <p class="feature-desc">在艾米社区，你可以找到志同道合的朋友。无论你是科技爱好者、艺术创作者还是生活达人，这里都有属于你的空间。</p>
+                    <button class="btn btn-primary">探索社区</button>
+                </div>
+                <div class="feature-visual fade-in-right">
+                    <div class="feature-image-container">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fHBlb3BsZSUyMGNvbGxhYm9yYXRpb258ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60" alt="People discovering interests together" class="feature-image">
+                    </div>
+                    <svg width="150" height="150" viewBox="0 0 200 200" style="position: absolute; top: -30px; right: -30px;">
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--highlight-1)" stroke-width="4" stroke-dasharray="10,5" />
+                        <path d="M100,20 A80,80 0 0,1 180,100 L100,100 Z" fill="var(--highlight-1)" fill-opacity="0.2" />
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-text fade-in-right">
+                    <h2 class="feature-title">即时交流</h2>
+                    <p class="feature-desc">我们优化的聊天系统让你与社区成员无缝沟通。支持文字、图片、语音等多种形式，让交流更生动。</p>
+                    <button class="btn btn-primary">开始对话</button>
+                </div>
+                <div class="feature-visual fade-in-left">
+                    <div class="feature-image-container">
+                        <img src="https://images.unsplash.com/photo-1556155092-490a1ba16284?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8cGVvcGxlJTIwY29tbXVuaWNhdGV8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60" alt="Real-time communication" class="feature-image">
+                    </div>
+                    <svg width="150" height="150" viewBox="0 0 200 200" style="position: absolute; bottom: -30px; left: -30px;">
+                        <rect x="40" y="50" width="120" height="100" rx="10" fill="none" stroke="var(--highlight-2)" stroke-width="4" />
+                        <line x1="60" y1="80" x2="160" y2="80" stroke="var(--highlight-2)" stroke-width="3" />
+                        <line x1="60" y1="110" x2="130" y2="110" stroke="var(--highlight-2)" stroke-width="3" />
+                        <circle cx="150" cy="120" r="15" fill="var(--highlight-2)" fill-opacity="0.3" stroke="var(--highlight-2)" stroke-width="3" />
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-text fade-in-left">
+                    <h2 class="feature-title">创意分享</h2>
+                    <p class="feature-desc">展示你的创意作品，获取反馈与灵感。艾米社区鼓励原创内容创作，为创作者提供理想的展示平台。</p>
+                    <button class="btn btn-primary">分享创意</button>
+                </div>
+                <div class="feature-visual fade-in-right">
+                    <div class="feature-image-container">
+                        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fHBlb3BsZSUyMGJyYWluc3Rvcm1pbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60" alt="Creative sharing" class="feature-image">
+                    </div>
+                    <svg width="150" height="150" viewBox="0 0 200 200" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        <polygon points="100,20 180,100 100,180 20,100" fill="none" stroke="var(--highlight-1)" stroke-width="4" stroke-opacity="0.5" />
+                        <circle cx="100" cy="100" r="30" fill="var(--highlight-2)" fill-opacity="0.2" stroke="var(--highlight-2)" stroke-width="3" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-container fade-in">
+                <h2 class="cta-title">加入我们的行列</h2>
+                <p class="cta-desc">成为艾米社区的一员，探索无限可能。立即加入超过10,000名用户的创意社区！</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary">立即注册</button>
+                    <button class="btn btn-secondary">了解更多</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h2 class="footer-logo">艾米</h2>
+                <p class="footer-description">连接志同道合的朋友，分享精彩瞬间，共同成长。在艾米社区，探索无限可能。</p>
+                <button class="btn btn-primary">加入社区</button>
+            </div>
+            <div class="footer-links">
+                <h3 style="color: var(--text-secondary); margin-bottom: 1rem;">快速链接</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--text-tertiary); text-decoration: none;">关于我们</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--text-tertiary); text-decoration: none;">联系方式</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--text-tertiary); text-decoration: none;">隐私政策</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--text-tertiary); text-decoration: none;">使用条款</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="footer-copyright">© 2023 艾米社区 Amy Community. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        // Loading Animation
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                loadingOverlay.style.opacity = '0';
+                setTimeout(function() {
+                    loadingOverlay. style.display = 'none';
+                }, 600);
+            }, 1500);
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        let isDarkMode = true;
+        
+        themeToggle.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            
+            if (isDarkMode) {
+                document.body.classList.remove('light-theme');
+                themeToggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+                themeToggle.setAttribute('aria-label', 'Switch to light mode');
+            } else {
+                document.body.classList.add('light-theme');
+                themeToggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+                themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+            }
+        });
+        
+        // Scroll animations
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 &&
+                rect.bottom >= 0
+            );
+        }
+
+        function handleScrollAnimations() {
+            const fadeElements = document.querySelectorAll('.fade-in, .fade-in-up, .fade-in-left, .fade-in-right');
+            
+            fadeElements.forEach(element => {
+                if (isInViewport(element) && !element.classList.contains('animated')) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translate(0, 0)';
+                    element.classList.add('animated');
+                }
+            });
+        }
+
+        // Initialize scroll animations
+        window.addEventListener('scroll', handleScrollAnimations);
+        window.addEventListener('load', handleScrollAnimations);
+
+        // Initialize fade elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transition = 'opacity 0.8s ease-out';
+        });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        });
+
+        document.querySelectorAll('.fade-in-left').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(-30px)';
+            el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        });
+
+        document.querySelectorAll('.fade-in-right').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(30px)';
+            el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        });
+    </script>
+</body>
+</html>
